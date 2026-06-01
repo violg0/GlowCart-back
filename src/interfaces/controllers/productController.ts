@@ -36,7 +36,16 @@ export const productController = {
   },
 
   async create(req: Request, res: Response, next: NextFunction) {
-    try {
+    try { 
+      const { name, price, description, image, categorySlug, stock } = req.body;
+      if (!name)         return res.status(400).json({ message: "El nombre es requerido" });
+      if (!price)        return res.status(400).json({ message: "El precio es requerido" });
+      if (price <= 0)    return res.status(400).json({ message: "El precio debe ser mayor a 0" });
+      if (!description)  return res.status(400).json({ message: "La descripción es requerida" });
+      if (!image)        return res.status(400).json({ message: "La imagen es requerida" });
+      if (!categorySlug) return res.status(400).json({ message: "La categoría es requerida" });
+      if (stock < 0)     return res.status(400).json({ message: "El stock no puede ser negativo" });
+
       const product = await createProd.execute(req.body);
       return res.status(201).json(product);
     } catch (e) { next(e); }
@@ -44,6 +53,10 @@ export const productController = {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
+      const { price, stock } = req.body;
+      if (price !== undefined && price <= 0) return res.status(400).json({ message: "El precio debe ser mayor a 0" });
+      if (stock !== undefined && stock < 0)  return res.status(400).json({ message: "El stock no puede ser negativo" });
+
       const product = await updateProd.execute(req.params.id, req.body);
       return res.json(product);
     } catch (e) { next(e); }
@@ -56,3 +69,5 @@ export const productController = {
     } catch (e) { next(e); }
   },
 };
+
+
