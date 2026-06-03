@@ -13,7 +13,22 @@
   const PORT = process.env.PORT ?? 4000;
 
   // ── Middlewares globales ─────────────────────────────────────────────────────
-  app.use(cors({ origin: process.env.FRONTEND_URL ?? "http://localhost:3000" }));
+  const allowedOrigins = [
+  process.env.FRONTEND_URL ?? "http://localhost:3000",
+  "http://localhost:3000",
+  "https://glow-cart-zeta.vercel.app",
+  "https://glow-cart-git-main-violg0s-projects.vercel.app",
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  }
+}));
   app.use(express.json());
   app.use(logger);
 
